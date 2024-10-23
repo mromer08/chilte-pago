@@ -1,0 +1,25 @@
+{
+  "name": "chilte-pago-api",
+  "version": "1.0.0",
+  "description": "A Node JS and React app for payments",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "test",
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mromer08/chilte-pago.git"
+  },
+  "keywords": [
+    "payments"
+  ],
+  "author": "Manuel Rojas",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/mromer08/chilte-pago/issues"
+  },
+  "homepage": "https://github.com/mromer08/chilte-pago#readme"
+}
