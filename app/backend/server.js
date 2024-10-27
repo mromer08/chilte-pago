@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import routes from './src/routes/index.js';
 
 const server = express();
 
@@ -12,26 +13,8 @@ server.use(express.urlencoded({ extended: false }));
 // built-in middleware for json 
 server.use(express.json());
 
-const api = '/api';
-
-// server.use(`${api}/static`, staticRouter);
-
-// server.use(`${api}/auth`, authRouter);
-// server.use(`${api}/category`, categoryRouter);
-// server.use(`${api}/product`, productRouter);
-// server.use(`${api}/store-settings`, storeSettingsRouter);
-// // the user needs to be login
-// server.use(verifyJWT);
-// server.use(`${api}/order`, orderRouter);
-// server.use(`${api}/bill`, billRouter);
-// server.use(`${api}/credit-card`, creditCardRouter);
-// server.use(`${api}/notification`, notificationRouter);
-// server.use(`${api}/address`, addressRouter);
-// server.use(`${api}/permission-type`, permissionTypeRouter);
-// server.use(`${api}/role`, roleRouter);
-// server.use(`${api}/user`, userRouter);
-
-// server.use(`${api}/report`, reportRouter);
+const api = '/api/v1';
+server.use(api, routes)
 
 
 server.all('api/*', (req, res) => {

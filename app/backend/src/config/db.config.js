@@ -15,13 +15,14 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   }
 });
 
-const testConnection = async () => {
+const dbConnection = async () => {
   try {
     await sequelize.authenticate();
+    await sequelize.sync();
     console.log('Connection to MariaDB has been established successfully.');
   } catch (error) {
-    console.error('ERROR: Unable to connect to the database:', error);
+    throw new Error(error);
   }
 };
 
-export {sequelize, testConnection};
+export {sequelize, dbConnection};
