@@ -1,0 +1,17 @@
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/db.config.js";
+
+const Application = sequelize.define('Application', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING, allowNull: false },
+    userId: { type: DataTypes.INTEGER, allowNull: false },
+    clientId: { type: DataTypes.STRING, allowNull: false, unique: true },
+    secretKey: { type: DataTypes.STRING, allowNull: false },
+    status: { type: DataTypes.STRING, allowNull: false },
+    paymentMethodId: { type: DataTypes.INTEGER }
+}, {
+    timestamps: true,
+    underscored: true
+});
+
+export default Application;
