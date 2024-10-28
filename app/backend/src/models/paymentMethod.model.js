@@ -9,7 +9,11 @@ const PaymentMethod = sequelize.define('PaymentMethod', {
     cardNumber: { type: DataTypes.STRING, allowNull: true }, // Encrypted storage
     pin: { type: DataTypes.STRING, allowNull: true }, // Encrypted storage
     paymentToken: { type: DataTypes.STRING, allowNull: true },
-    status: { type: DataTypes.STRING, allowNull: false }
+    status: { 
+        type: DataTypes.ENUM('VALIDA', 'INVALIDA', 'ELIMINADO'),
+        allowNull: false,
+        defaultValue: 'VALIDA'
+     }
 }, {
     timestamps: true,
     underscored: true

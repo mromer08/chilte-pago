@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import routes from './src/routes/index.js';
-
+import { authRoutes, paymentMethodRoutes, roleRoutes, userRoutes } from './src/routes/index.js';
+import verifyJWT from './src/middlewares/verifyJWT.middleware.js'
 const server = express();
 
 server.use(express.json());
@@ -14,7 +14,12 @@ server.use(express.urlencoded({ extended: false }));
 server.use(express.json());
 
 const api = '/api/v1';
-server.use(api, routes)
+server.use(`${api}/auth`, authRoutes);
+server.use(`${api}/role`, roleRoutes);
+server.use(`${api}/user`, userRoutes);
+server.use(verifyJWT);
+server.use(`${api}/payment-method`, paymentMethodRoutes);
+
 
 
 server.all('api/*', (req, res) => {
