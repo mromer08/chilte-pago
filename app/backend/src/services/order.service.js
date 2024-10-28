@@ -1,6 +1,8 @@
 import {Order, User} from "../models/index.js";
+import applicationService from "./application.service.js";
 import bankService from "./microservices/bank.service.js";
 import paymentMethodService from "./paymentMethod.service.js";
+import userService from "./user.service.js";
 
 class OrderService {
     async createOrder(data) {
@@ -33,20 +35,35 @@ class OrderService {
     async updateOrderWithPayment(orderId, userId, paymentMethodId) {
         const order = await this.getOrderById(orderId);
         if (!order) throw { status: 404, message: 'Order not found' };
-
+    
         const paymentMethod = await paymentMethodService.findPaymentMethodById(paymentMethodId);
         if (!paymentMethod) throw { status: 404, message: 'Payment method not found' };
-
-        const paymentData = { cardNumber: paymentMethod.cardNumber, pin: paymentMethod.pin };
-        const isAuthorized = await bankService.validatePay(paymentData);
-        
-        if (!isAuthorized) throw { status: 400, message: 'Payment not authorized' };
-
+    
         order.userId = userId;
         order.paymentMethodId = paymentMethodId;
+        order.status = 'CONFIRMADO';
+        await order.save();
+    
+        // Validar el pago con el banco
+        const paymentData = { cardNumber: paymentMethod.cardNumber, pin: paymentMethod.pin };
+        const isAuthorized = await bankService.validatePay(paymentData);
+    
+        if (!isAuthorized) {
+            throw { status: 400, message: 'Payment not authorized' };
+        }
+    
         order.status = 'AUTORIZADO';
         await order.save();
-
+    
+        // Sumar al balance del usuario la cantidad de la orden
+        const amount = order.amount;
+        const application = await applicationService.getApplicationById(order.applicationId);
+        const user = await userService.getUserById(application.userId);
+        if (!user) throw { status: 404, message: 'User not found' };
+    
+        user.balance += amount;
+        await user.save();
+    
         return order;
     }
 

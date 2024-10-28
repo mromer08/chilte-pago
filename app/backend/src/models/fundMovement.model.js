@@ -7,11 +7,11 @@ const FundMovement = sequelize.define('FundMovement', {
     paymentMethodId: { type: DataTypes.INTEGER, allowNull: false },
     totalAmount: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
     commissionAmount: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
-    netAmount: { 
-        type: DataTypes.DECIMAL(10, 2),
+    netAmount: {
+        type: DataTypes.ENUM('CONFIRMADO', 'AUTORIZADO'),
         allowNull: false,
-        // defaultValue: sequelize.literal('totalAmount - commissionAmount') 
-    },
+        defaultValue: 'CONFIRMADO'
+     },
     status: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.STRING }
 }, {

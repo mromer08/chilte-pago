@@ -4,6 +4,7 @@ import authRoutes from './auth.routes.js';
 import paymentMethodRoutes from './paymentMethod.routes.js';
 import applicationRoutes from './application.routes.js';
 import orderRoutes from './order.routes.js';
+import fundMovementRoutes from './fundMovement.routes.js';
 
 export {
     userRoutes,
@@ -11,5 +12,6 @@ export {
     authRoutes,
     paymentMethodRoutes,
     applicationRoutes,
-    orderRoutes
+    orderRoutes,
+    fundMovementRoutes
 };
