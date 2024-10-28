@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/',PaymentMethodController.createPaymentMethod);
 router.get('/:id',PaymentMethodController.getPaymentMethodById);
-router.get('/user/:userId',PaymentMethodController.getPaymentMethodsByUserId);
+router.get('/user',PaymentMethodController.getPaymentMethodsByUserId);
 router.put('/:id',PaymentMethodController.updatePaymentMethod);
 router.delete('/:id',PaymentMethodController.deletePaymentMethod);
 

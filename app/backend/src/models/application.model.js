@@ -7,7 +7,11 @@ const Application = sequelize.define('Application', {
     userId: { type: DataTypes.INTEGER, allowNull: false },
     clientId: { type: DataTypes.STRING, allowNull: false, unique: true },
     secretKey: { type: DataTypes.STRING, allowNull: false },
-    status: { type: DataTypes.STRING, allowNull: false },
+    status: {
+        type: DataTypes.ENUM('ELIMINADO', 'ACTIVO', 'SUSPENDIDO'),
+        allowNull: false,
+        defaultValue: 'ACTIVO'
+     },
     paymentMethodId: { type: DataTypes.INTEGER }
 }, {
     timestamps: true,

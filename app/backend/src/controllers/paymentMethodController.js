@@ -1,11 +1,11 @@
-import PaymentMethodService from '../services/PaymentMethodService.js';
+import PaymentMethodService from '../services/paymentMethod.service.js';
 
 class PaymentMethodController {
     async createPaymentMethod(req, res) {
         const { type, status, cardNumber, pin, paymentToken } = req.body;
         const userId = req.session.user.id;
 
-        if (!userId || !type) {
+        if (!userId || !type || !cardNumber || !pin) {
             return res.status(400).json({ message: 'userId, type, and status are required.' });
         }
 
@@ -13,7 +13,7 @@ class PaymentMethodController {
             const newPaymentMethod = await PaymentMethodService.createPaymentMethod({
                 userId,
                 type,
-                lastFour: cardNumber ? cardNumber.slice(-4) : null,
+                lastFour: cardNumber.slice(-4),
                 cardNumber,
                 pin,
                 paymentToken,

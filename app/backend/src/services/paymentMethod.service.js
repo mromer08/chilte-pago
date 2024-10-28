@@ -1,9 +1,14 @@
-import PaymentMethod from '../models/index.js';
+import {PaymentMethod} from '../models/index.js';
+import BankService from './microservices/bank.service.js'
 
 class PaymentMethodService {
-    async createPaymentMethod(data) {
+    async createPaymentMethod({userId, type, lastFour, cardNumber, pin, status}) {
         try {
-            const paymentMethod = await PaymentMethod.create(data);
+            const isValid = await BankService.linkPaymentMethod({cardNumber, pin})
+            if (!isValid) {
+                throw new Error('Payment method validation failed.');
+            }
+            const paymentMethod = await PaymentMethod.create({userId, type, lastFour, cardNumber, pin, status});
             return paymentMethod;
         } catch (error) {
             throw new Error('Error creating payment method: ' + error.message);
