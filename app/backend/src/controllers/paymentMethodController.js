@@ -27,7 +27,6 @@ class PaymentMethodController {
 
     async getPaymentMethodById(req, res) {
         const { id } = req.params;
-
         try {
             const paymentMethod = await PaymentMethodService.findPaymentMethodById(id);
             if (!paymentMethod) {
@@ -40,12 +39,12 @@ class PaymentMethodController {
     }
 
     async getPaymentMethodsByUserId(req, res) {
-        const { userId } = req.params;
-
+        const userId = req.session.user.id;
         try {
             const paymentMethods = await PaymentMethodService.findPaymentMethodsByUserId(userId);
             res.json(paymentMethods);
         } catch (error) {
+            console.log(error)
             res.status(500).json({ message: error.message });
         }
     }
