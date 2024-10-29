@@ -5,7 +5,10 @@ import verifyJWT from './src/middlewares/verifyJWT.middleware.js'
 const server = express();
 
 server.use(express.json());
-server.use(cors());
+server.use(cors({
+    origin: true,
+    credentials: true,
+}));
 
 // built-in middleware to handle urlencoded form data
 server.use(express.urlencoded({ extended: false }));

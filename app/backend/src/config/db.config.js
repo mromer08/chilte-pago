@@ -18,7 +18,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 const dbConnection = async () => {
   try {
     await sequelize.authenticate();
-    await sequelize.sync();
+    await sequelize.sync({alter:true});
     console.log('Connection to MariaDB has been established successfully.');
   } catch (error) {
     throw new Error(error);
