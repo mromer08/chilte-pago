@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { applicationRoutes, authRoutes, fundMovementRoutes, orderRoutes, paymentMethodRoutes, roleRoutes, userRoutes } from './src/routes/index.js';
+import { authRoutes, fundMovementRoutes, paymentMethodRoutes, roleRoutes, userRoutes } from './src/routes/index.js';
 import verifyJWT from './src/middlewares/verifyJWT.middleware.js'
 const server = express();
 
@@ -18,13 +18,11 @@ server.use(express.json());
 
 const api = '/api/v1';
 server.use(`${api}/auth`, authRoutes);
-server.use(`${api}/order`, orderRoutes);
 
 server.use(`${api}/role`, roleRoutes);
 server.use(`${api}/user`, userRoutes);
 server.use(verifyJWT);
 server.use(`${api}/payment-method`, paymentMethodRoutes);
-server.use(`${api}/app`, applicationRoutes);
 server.use(`${api}/fund-movement`, fundMovementRoutes);
 
 

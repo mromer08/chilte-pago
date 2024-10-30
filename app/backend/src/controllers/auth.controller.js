@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken';
 
 import userService from "../services/user.service.js";
 import tokenService from '../services/token.service.js';
-import applicationService from '../services/application.service.js';
 
 export const login = async (req, res) => {
     const { email, password } = req.body;
@@ -58,38 +57,6 @@ export const refreshTokenHandler = async (req, res) => {
     );
 }
 
-export const validateApplication = async (req, res) => {
-    const { clientId, secretKey } = req.body;
+export const validateCompany = async (req, res) => {
 
-    // Validar que ambos campos están presentes
-    if (!clientId || !secretKey) {
-        return res.status(400).json({ message: 'clientId and secretKey are required.' });
-    }
-
-    try {
-        // Buscar la aplicación por clientId
-        const application = await applicationService.getApplicationByClientId(clientId);
-        if (!application) {
-            return res.status(404).json({ message: 'Application not found' });
-        }
-
-        // Verificar que la secretKey coincida y que la aplicación esté activa
-        if (application.secretKey !== secretKey) {
-            return res.status(401).json({ message: 'Invalid secret key' });
-        }
-        if (application.status !== 'ACTIVO') {
-            return res.status(403).json({ message: 'Application is not active' });
-        }
-
-        // Generar token JWT específico para la aplicación
-        const token = jwt.sign(
-            { applicationId: application.id, name: application.name },
-            process.env.APP_TOKEN_SECRET,
-            { expiresIn: '1d' }
-        );
-
-        res.json({ token });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
 };

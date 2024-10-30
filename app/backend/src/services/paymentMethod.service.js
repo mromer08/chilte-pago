@@ -1,17 +1,20 @@
 import {PaymentMethod} from '../models/index.js';
-import BankService from './microservices/bank.service.js'
+import BankService from './microservices/creditCard.service.js'
 
 class PaymentMethodService {
-    async createPaymentMethod({userId, type, lastFour, cardNumber, pin, status}) {
+    async createPaymentMethod({ userId, type, lastFour, cardNumber, pin, status }) {
         try {
-            const isValid = await BankService.linkPaymentMethod({cardNumber, pin})
+            // Validar el método de pago con el servicio bancario
+            const isValid = await BankService.linkPaymentMethod({ cardNumber, pin });
             if (!isValid) {
-                throw new Error('Payment method validation failed.');
+                throw { status: 400, message: 'Payment method validation failed.' };
             }
-            const paymentMethod = await PaymentMethod.create({userId, type, lastFour, cardNumber, pin, status});
+
+            // Crear el método de pago si la validación fue exitosa
+            const paymentMethod = await PaymentMethod.create({ userId, type, lastFour, cardNumber, pin, status });
             return paymentMethod;
         } catch (error) {
-            throw new Error('Error creating payment method: ' + error.message);
+            throw { status: error.status || 500, message: 'Error creating payment method: ' + error.message };
         }
     }
 
