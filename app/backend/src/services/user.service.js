@@ -1,29 +1,38 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-import { User, Role } from '../models/index.js';
+import { User, Role, Company } from '../models/index.js';
 import tokenService from './token.service.js';
 
 class UserService {
     async createUser(data) {
-        const { firstname, lastname, email, password, roleId=2000 } = data;
-
-        // Check if the user already exists
+        const { firstname, lastname, companyCode, password, username, roleId = 2000 } = data;
+    
+        // Verificar si la empresa existe
+        const company = await Company.findOne({ where: { code: companyCode } });
+        if (!company) {
+            throw { status: 404, message: 'Company not found' };
+        }
+    
+        // Generar el email en base al username y la información de la empresa
+        const email = `${username}${companyCode}@${company.name}.com`;
+    
+        // Verificar si el email ya está en uso
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
             throw { status: 409, message: 'Email already in use' };
         }
-
-        // Hash the password
+    
+        // Hashear la contraseña
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Find the role
+    
+        // Verificar si el rol existe
         const role = await Role.findByPk(roleId);
         if (!role) {
             throw { status: 500, message: 'Default role CLIENTE not found' };
         }
-
-        // Create and return new user
+    
+        // Crear y retornar el nuevo usuario
         const newUser = await User.create({
             firstname,
             lastname,
@@ -31,9 +40,10 @@ class UserService {
             password: hashedPassword,
             roleId: role.id,
         });
-
+    
         return newUser;
     }
+    
 
     async getAllUsers() {
         try {

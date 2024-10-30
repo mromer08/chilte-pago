@@ -93,3 +93,8 @@ CREATE TABLE IF NOT EXISTS error_logs (
 INSERT INTO roles (id, name, created_at, updated_at) values (2000, "CLIENTE", now(), now());
 INSERT INTO roles (id, name, created_at, updated_at) values (1001, "ADMIN", now(), now());
 -- INSERT INTO roles (id, name, created_at, updated_at) values (1002, "EMPRESA", now(), now());
+
+INSERT INTO companies (code, secret_key, name, status, created_at, updated_at)
+VALUES ('1234', 'Tienda1Secret', 'Tienda1', 'ACTIVO', NOW(), NOW());
+
+UPDATE companies SET user_id = 2 WHERE code = 1234;

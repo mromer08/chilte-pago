@@ -9,26 +9,25 @@ class CreditCardService {
     async linkPaymentMethod({ cardNumber, pin }) {
         try {
             // Obtener el token de autenticación
-            const authResponse = await axios.get(`${PAYMENT_MICROSERVICE_URL}/api/auth/token`, {
-                data: {
-                    clientId: CREDIT_CLIENT_ID,
-                    clientSecret: CREDIT_CLIENT_SECRET
-                }
+            const authResponse = await axios.post(`${PAYMENT_MICROSERVICE_URL}/api/auth/token`, {
+                clientId: CREDIT_CLIENT_ID,
+                clientSecret: CREDIT_CLIENT_SECRET
             });
 
             const { token } = authResponse.data;
             if (!token) throw new Error('Token retrieval failed.');
             console.log(token);
             // Llamada para vincular el método de pago usando el token
-            const response = await axios.get(
+            const response = await axios.post(
                 `${process.env.PAYMENT_MICROSERVICE_URL}/api/card`,
+                {cardNumber, pin},
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
-                    },
-                    data: { cardNumber, pin }
+                    }
                 }
             );
+            
 
             return response.data.exist;
         } catch (error) {
@@ -37,7 +36,7 @@ class CreditCardService {
         }
     }
 
-    async validatePay({cardNumber, pin}) {
+    async validatePay({cardNumber, pin, amount}) {
         return true;
         // try {
         //     const response = await axios.post(`${process.env.PAYMENT_MICROSERVICE_URL}/link-payment-method`, paymentData);

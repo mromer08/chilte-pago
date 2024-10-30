@@ -1,54 +1,81 @@
-import {FundMovement} from '../models/index.js';
-import paymentMethodService from './paymentMethod.service.js';
-import userService from './user.service.js';
+import {FundMovement, PaymentMethod, User} from '../models/index.js';
 
 class FundMovementService {
-    async createFundMovement({ userId, paymentMethodId, totalAmount, description }) {
-        // Validar campos obligatorios
-        if (!userId || !paymentMethodId || !totalAmount) {
-            throw new Error('User ID, Payment Method ID, and Total Amount are required');
+    async createFundMovement(data) {
+        const { userId, paymentMethodId, type, status, totalAmount, commissionAmount, netAmount, description } = data;
+
+        if (!userId || !paymentMethodId || !totalAmount || !type) {
+            throw { status: 400, message: 'userId, paymentMethodId, tipo and totalAmount are required!' };
         }
 
-        // Validar existencia del usuario
-        const user = await userService.getUserById(userId);
-        if (!user) throw { status: 404, message: 'User not found' };
-
-        // Validar existencia del método de pago
-        const paymentMethod = await paymentMethodService.findPaymentMethodById(paymentMethodId);
-        if (!paymentMethod) throw { status: 404, message: 'Payment method not found' };
-
-        // Verificar que el usuario tenga suficiente balance
-        if (user.balance < totalAmount) {
-            throw { status: 400, message: 'Insufficient balance' };
+        // Verificar si el usuario existe
+        const userExists = await User.findByPk(userId);
+        if (!userExists) {
+            throw { status: 404, message: 'User not found' };
         }
 
-        // Calcular comisión (1.3% del totalAmount)
-        const commissionAmount = parseFloat((totalAmount * 0.013).toFixed(2));
-        const netAmount = parseFloat((totalAmount - commissionAmount).toFixed(2));
-
-        try {
-            user.balance -= totalAmount;
-            await user.save();
-
-            // Crear el movimiento de fondos
-            const fundMovement = await FundMovement.create({
-                userId,
-                paymentMethodId,
-                totalAmount,
-                commissionAmount,
-                netAmount,
-                status: 'CONFIRMADO', // Inicialmente en estado 'CONFIRMADO'
-                description
-            });
-
-            return fundMovement;
-        } catch (error) {
-            throw new Error('Error creating fund movement: ' + error.message);
+        // Verificar si el método de pago existe
+        const paymentMethodExists = await PaymentMethod.findByPk(paymentMethodId);
+        if (!paymentMethodExists) {
+            throw { status: 404, message: 'Payment method not found' };
         }
+
+        // Crear y retornar el nuevo movimiento de fondos
+        const newFundMovement = await FundMovement.create({
+            userId,
+            paymentMethodId,
+            type,
+            status,
+            totalAmount,
+            commissionAmount,
+            netAmount,
+            description
+        });
+
+        return newFundMovement;
     }
 
-    async getFundMovementsByUserId(userId) {
-        return await FundMovement.findAll({ where: { userId } });
+    // Obtener todos los movimientos de fondos
+    async getAllFundMovements() {
+        return await FundMovement.findAll();
+    }
+
+    // Obtener movimiento de fondos por ID
+    async getFundMovementById(id) {
+        const fundMovement = await FundMovement.findByPk(id);
+        if (!fundMovement) {
+            throw { status: 404, message: 'Fund movement not found' };
+        }
+        return fundMovement;
+    }
+
+    // Actualizar movimiento de fondos por ID
+    async updateFundMovement(id, data) {
+        const fundMovement = await FundMovement.findByPk(id);
+        if (!fundMovement) {
+            throw { status: 404, message: 'Fund movement not found' };
+        }
+
+        // Validar campos obligatorios
+        if (!data.userId || !data.paymentMethodId || !data.totalAmount) {
+            throw { status: 400, message: 'userId, paymentMethodId, and totalAmount are required!' };
+        }
+
+        // Actualizar los datos del movimiento de fondos y guardar
+        await fundMovement.update(data);
+        return fundMovement;
+    }
+
+    // Eliminar movimiento de fondos por ID
+    async deleteFundMovement(id) {
+        const fundMovement = await FundMovement.findByPk(id);
+        if (!fundMovement) {
+            throw { status: 404, message: 'Fund movement not found' };
+        }
+
+        // Eliminar el movimiento de fondos
+        await fundMovement.destroy();
+        return { message: 'Fund movement deleted successfully' };
     }
 }
 

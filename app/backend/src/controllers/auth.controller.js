@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 
 import userService from "../services/user.service.js";
 import tokenService from '../services/token.service.js';
+import companyService from '../services/company.service.js';
 
 export const login = async (req, res) => {
     const { email, password } = req.body;
@@ -16,15 +17,17 @@ export const login = async (req, res) => {
 };
 
 export const register = async (req, res) => {
-    const { firstname, lastname, email, password } = req.body;
+    const { firstname, lastname, companyCode, password, username } = req.body;
     console.log(req.body);
-    if (!firstname || !lastname || !email || !password) {
-        return res.status(400).json({ message: 'Firstname, lastname, email, and password are required.' });
+
+    // Validar que los datos requeridos estén presentes
+    if (!firstname || !lastname || !companyCode || !password || !username) {
+        return res.status(400).json({ message: 'Firstname, lastname, companyCode, password, and username are required.' });
     }
 
     try {
-        const user = await userService.createUser({ firstname, lastname, email, password, roleId: 2000 });
-        res.status(201).json({ success: `New user ${email} registered!` });
+        const user = await userService.createUser({ firstname, lastname, companyCode, password, username, roleId: 2000 });
+        res.status(201).json({ success: `New user ${user.email} registered!` });
         
     } catch (error) {
         res.status(error.status || 500).json({ message: error.message });
@@ -58,5 +61,18 @@ export const refreshTokenHandler = async (req, res) => {
 }
 
 export const validateCompany = async (req, res) => {
+    const { code, secretKey } = req.body;
 
+    // Validar campos obligatorios
+    if (!code || !secretKey) {
+        return res.status(400).json({ message: 'Company ID and secret key are required.' });
+    }
+
+    try {
+        // Autenticar la compañía
+        const { token, companyName } = await companyService.authenticateCompany(code, secretKey);
+        res.status(200).json({ token, companyName });
+    } catch (error) {
+        res.status(error.status || 500).json({ message: error.message });
+    }
 };

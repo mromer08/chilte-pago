@@ -6,12 +6,14 @@ const verifyAppJWT = (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
 
-    jwt.verify(token, process.env.APP_TOKEN_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.COMPANY_TOKEN_SECRET, (err, decoded) => {
         if (err) return res.sendStatus(401); // Unauthorized if invalid token
         // Guardar applicationId en req.session.app.id
         req.session = {
-            app: {
-                id: decoded.applicationId
+            company: {
+                id: decoded.code,
+                name:decoded.name,
+                userId:decoded.userId
             }
         };
 
