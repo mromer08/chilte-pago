@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import { ROLES } from "../App";
@@ -88,9 +88,7 @@ const Register = ({ admin = false, updateUser, setEdit,   edit = {
       }
 
       reset();
-      setTimeout(() => {
-        navigate(auth?.roles?.includes(ROLES.Admin) ? "/users" : "/login");
-      }, 2000);
+      navigate(auth?.roles?.includes(ROLES.Admin) ? "/users" : "/login");
     } catch (err) {
       console.log(err)
       const message =
@@ -206,7 +204,6 @@ const Register = ({ admin = false, updateUser, setEdit,   edit = {
           </p>
         )}
       </div>
-      <ToastContainer />
     </section>
   );
 };

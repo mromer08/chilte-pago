@@ -10,6 +10,7 @@ import RequireAuth from "./components/RequireAuth";
 import UserDashboard from "./pages/user/UserDashboard";
 import ApplicationForm from "./pages/partials/applicattion/ApplicationForm";
 import CreditCardList from "./pages/partials/cards/CreditCardList";
+import NotFound from "./pages/NotFound";
 
 export const ROLES = {
   User: 2000,
@@ -24,10 +25,8 @@ function App() {
         {/* public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Welcome />} />
-
-        
         <Route element={<NavBarLayout />}>
+          <Route path="/" element={<Welcome />} />
           <Route path="/user/new-app" element={<ApplicationForm/>} />
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route element={<RequireAuth allowedRole={ROLES.User} />}>
@@ -36,6 +35,9 @@ function App() {
           
           </Route>
         
+
+          {/* catch all */}
+          <Route path="*" element={<NotFound />} />
         </Route>
         
       </Route>

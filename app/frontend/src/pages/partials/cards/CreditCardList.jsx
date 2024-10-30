@@ -52,7 +52,12 @@ export default function CreditCardList() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+  
+    <>
+
+<section className="flex min-h-full flex-1 flex-col justify-center">
+<div className="sm:mx-auto sm:w-full sm:max-w-sm">
+
       <div className="flex items-start justify-between">
         <h2 className="text-lg font-bold text-gray-900">Mis tarjetas</h2>
       </div>
@@ -97,7 +102,7 @@ export default function CreditCardList() {
                     <div className="flex">
                       <button
                         type="button"
-                        onClick={() => deleteCard(card)}
+                        onClick={() => deleteCard(card.id)}
                         className="font-medium text-indigo-600 hover:text-indigo-500"
                       >
                         <TrashIcon className="h-6 w-6" />
@@ -131,18 +136,12 @@ export default function CreditCardList() {
             </li>
           </ul>
         </div>
-        <div>
-          <button
-            type="button"
-            disabled={!selectedCard}
-            onClick={handlePayment}
-            className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-300 disabled:pointer-events-none"
-          >
-            Pagar
-          </button>
-          {showAddCardForm && <CreditCardForm createNewCard={createNewCard} />}
-        </div>
       </div>
-    </div>
+
+</div>
+
+</section>
+    {showAddCardForm && <CreditCardForm createNewCard={createNewCard} />}
+    </>
   );
 }

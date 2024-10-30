@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
 import "react-toastify/dist/ReactToastify.css";
 import App from './App';
+import { ToastContainer } from 'react-toastify';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -15,6 +16,7 @@ root.render(
         <Routes>
           <Route path="/*" element={<App />} />
         </Routes>
+        <ToastContainer />
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

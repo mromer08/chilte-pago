@@ -56,6 +56,20 @@ export default function NavBar() {
         current: false,
       }
     );
+  } else {
+    navigation = [];
+    navigation.push(
+      {
+        name: "Acerca de",
+        href: "/about",
+        current: false,
+      },
+      {
+        name: "Preguntas frecuentes",
+        href: "/faq",
+        current: false,
+      },
+    );
   }
 
   const logout = async () => {

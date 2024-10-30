@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import useAuth from "../hooks/useAuth";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "../api/axios";
@@ -30,7 +30,7 @@ const Login = () => {
       );
       const { token, role, fullname } = response.data;
       setAuth({ ...data, role, token, fullname });
-      toast.success("Inicio de sesión exitoso");
+      toast.success("Bienvenido");
       navigate(from, { replace: true });
     } catch (err) {
         
@@ -106,7 +106,6 @@ const Login = () => {
                 </p>
             </div>
         </div>
-        <ToastContainer />
     </section>
 );
 };
