@@ -19,10 +19,10 @@ const PWD_REGEX = true;
 const REGISTER_URL = "/auth/register";
 
 const Register = ({ admin = false, updateUser, setEdit,   edit = {
-  email: "",
+  username: "",
   firstname: "",
   lastname: "",
-  roles: {},
+  role: "",
 }, }) => {
   const { auth } = useAuth();
   const navigate = useNavigate();
@@ -40,21 +40,21 @@ const Register = ({ admin = false, updateUser, setEdit,   edit = {
     defaultValues: {
       firstname: edit.firstname || "",
       lastname: edit.lastname || "",
-      email: edit.email || "",
+      username: edit.username || "",
       password: "",
       confirm_pwd: "",
-      rol: edit.roles?.Admin || edit.roles?.Delivery || ROLES.Admin,
+      rol: edit.role || ROLES.Admin,
     },
   });
 
   const onSubmit = async (data) => {
-    const { firstname, lastname, email, password, rol } = data;
+    const { firstname, lastname, username, password, rol, companyCode } = data;
 
     try {
       if (!admin) {
         await axios.post(
           REGISTER_URL,
-          JSON.stringify({ email, password, firstname, lastname }),
+          JSON.stringify({ username, password, firstname, lastname, companyCode }),
           { headers: { "Content-Type": "application/json" } }
         );
         toast.success("Usuario registrado exitosamente.");
@@ -64,9 +64,9 @@ const Register = ({ admin = false, updateUser, setEdit,   edit = {
           if (ROLES[key].toString() === rol.toString()) rolObj[key] = Number(rol);
         }
 
-        if (edit._id) {
+        if (edit.id) {
           await updateUser({
-            _id: edit._id,
+            id: edit.id,
             password: password.trim().length > 3 ? password : false,
             firstname,
             lastname,
@@ -76,7 +76,6 @@ const Register = ({ admin = false, updateUser, setEdit,   edit = {
           toast.success("Usuario actualizado.");
         } else {
           await axiosPrivate.post("/api/users", {
-            email,
             password,
             firstname,
             lastname,
@@ -112,7 +111,7 @@ const Register = ({ admin = false, updateUser, setEdit,   edit = {
               <img className="mx-auto h-20 w-auto" src="gt.png" alt="eCommerce GT" />
               <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
                 {admin
-                  ? edit._id
+                  ? edit.id
                     ? "Editar cuenta de empleado"
                     : "Nueva cuenta de empleado"
                   : "Crea tu cuenta de eCommerce GT"}
@@ -138,17 +137,22 @@ const Register = ({ admin = false, updateUser, setEdit,   edit = {
                 <InputError message={errors.lastname?.message} />
               </div>
 
-              <div className="col-span-full">
-                <InputLabel htmlFor="email" value="Correo electronico" />
+              <div className="sm:col-span-3">
+                <InputLabel htmlFor="username" value="Username" />
                 <TextInput
-                  id="email"
-                  readOnly={edit._id ? true : false}
-                  {...register("email", {
-                    required: "Correo electronico es requerido",
-                    pattern: { value: EMAIL_REGEX, message: "Formato inválido" },
-                  })}
+                  id="username"
+                  {...register("username", { required: "Username es requerido" })}
                 />
-                <InputError message={errors.email?.message} />
+                <InputError message={errors.username?.message} />
+              </div>
+
+              <div className="sm:col-span-3">
+                <InputLabel htmlFor="lastname" value="Codigo de empresa" />
+                <TextInput
+                  id="companyCode"
+                  {...register("companyCode", { required: "Apellido es requerido" })}
+                />
+                <InputError message={errors.companyCode?.message} />
               </div>
 
               <div className="sm:col-span-3">
@@ -178,20 +182,20 @@ const Register = ({ admin = false, updateUser, setEdit,   edit = {
 
               {admin && (
                 <div className="col-span-full">
-                  <InputLabel htmlFor="rol" value="Rol" />
+                  <InputLabel htmlFor="role" value="Rol" />
                   <SelectInput
                     id="rol"
                     options={[
                       { value: ROLES.Admin, label: "Admin" },
-                      { value: ROLES.Delivery, label: "Delivery" },
+                      { value: ROLES.User, label: "Cliente" },
                     ]}
-                    {...register("rol")}
+                    {...register("role")}
                   />
                 </div>
               )}
             </div>
 
-            <PrimaryButton>{edit._id ? "Editar cuenta" : "Crear cuenta"}</PrimaryButton>
+            <PrimaryButton>{edit.id ? "Editar cuenta" : "Crear cuenta"}</PrimaryButton>
           </div>
         </form>
 

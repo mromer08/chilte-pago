@@ -55,7 +55,9 @@ class UserService {
 
     async getUserById(id) {
         try {
-            const user = await User.findByPk(id);
+            const user = await User.findByPk(id, {
+                attributes: { exclude: ['password'] }
+            });
             if (!user) throw new Error('User not found');
             return user;
         } catch (error) {
@@ -116,7 +118,7 @@ class UserService {
     
         await tokenService.createToken({ userId: user.id, tokenString: refreshToken });
     
-        return { token, role: user.Role.id, fullname: `${user.firstname} ${user.lastname}` };
+        return { token, role: user.Role.id, fullname: `${user.firstname} ${user.lastname}`, balance:user.balance };
     };
 
     async updatePassword (userId, currentPassword, newPassword) {

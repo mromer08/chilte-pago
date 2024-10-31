@@ -8,8 +8,8 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const { token, role, fullname } = await userService.authenticateUser(email, password);
-        return res.json({ token, role, fullname });
+        const { token, role, fullname, balance } = await userService.authenticateUser(email, password);
+        return res.json({ token, role, fullname, balance:Number(balance) });
     } catch (error) {
         console.log(error)
         return res.status(error.status || 500).json({ message: error.message || 'Login Failed' });

@@ -1,5 +1,5 @@
 import {sequelize} from '../config/db.config.js';
-import {Company, PaymentMethod, User} from '../models/index.js';
+import {Company, FundMovement, PaymentMethod, User} from '../models/index.js';
 import FundMovementService from './fundMovement.service.js';
 
 class PaymentService {
@@ -44,6 +44,17 @@ class PaymentService {
                 transaction: t 
             });
 
+            await FundMovement.create({
+                userId: companyUser.id,
+                paymentMethodId: userPaymentMethod.id,
+                type: 'INGRESO',
+                status: 'PROCESADA',
+                totalAmount: amount,
+                commissionAmount: 0,
+                netAmount: amount,
+                description: `Ingreso por compra de ${user.email}`,
+            }, { transaction: t });
+
             companyUser.balance = Number(companyUser.balance) + Number(amount);
             await companyUser.save({ transaction: t });
             await t.commit();
@@ -82,7 +93,7 @@ class PaymentService {
             await FundMovementService.createFundMovement({
                 userId: user.id,
                 paymentMethodId: userPaymentMethod.id,
-                type: 'INGRESO',
+                type: 'EGRESO',
                 status: 'PROCESADA',
                 totalAmount: netAmountForUser,
                 commissionAmount: commissionAmount,

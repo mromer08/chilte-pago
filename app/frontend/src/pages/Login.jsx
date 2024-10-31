@@ -28,8 +28,9 @@ const Login = () => {
         JSON.stringify(data),
         { headers: { "Content-Type": "application/json" } }
       );
-      const { token, role, fullname } = response.data;
-      setAuth({ ...data, role, token, fullname });
+      const { token, role, fullname, balance } = response.data;
+      console.log(response.data);
+      setAuth({ ...data, role, token, fullname, balance });
       toast.success("Bienvenido");
       navigate(from, { replace: true });
     } catch (err) {
