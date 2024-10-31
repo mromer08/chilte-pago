@@ -114,6 +114,27 @@ class FundMovementService {
         return { message: 'Fund movement deleted successfully' };
     }
 
+    async getFundMovementsByUserId(userId) {
+        if (!userId) {
+            throw { status: 400, message: 'User ID is required.' };
+        }
+    
+        const userExists = await User.findByPk(userId);
+        if (!userExists) {
+            throw { status: 404, message: 'User not found' };
+        }
+    
+        const fundMovements = await FundMovement.findAll({
+            where: { userId },
+            include: [
+                { model: PaymentMethod, attributes: ['type', 'cardNumber'] }
+            ],
+            order: [['created_at', 'DESC']]
+        });
+    
+        return fundMovements;
+    }
+
 
 }
 

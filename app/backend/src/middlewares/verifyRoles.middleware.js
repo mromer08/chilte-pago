@@ -3,7 +3,7 @@ const verifyRoles = (...allowedRoleCodes) => {
         if (!req.session.user || !req.session.user.role) {
             return res.sendStatus(401); // Unauthorized
         }
-        const userRoleCode = req.session.user.role;
+        const userRoleCode = Number(req.session.user.role);
         console.log(allowedRoleCodes);
         console.log(userRoleCode);
         if (!allowedRoleCodes.includes(userRoleCode)) {

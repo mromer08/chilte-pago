@@ -40,6 +40,36 @@ class FundMovementController {
             res.status(error.status || 500).json({ message: error.message });
         }
     }
+
+    async getFundMovementsByUserId(req, res) {
+        const {id} = req.params;
+
+        if (!id) {
+            return res.status(400).json({ message: 'User ID is required.' });
+        }
+
+        try {
+            const fundMovements = await fundMovementService.getFundMovementsByUserId(id);
+            res.json(fundMovements);
+        } catch (error) {
+            res.status(error.status || 500).json({ message: error.message || 'Error retrieving fund movements' });
+        }
+    }
+    
+    async getFundMovementsByUserAuth(req, res) {
+        const userId = req.session.user.id;
+
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required.' });
+        }
+
+        try {
+            const fundMovements = await fundMovementService.getFundMovementsByUserId(userId);
+            res.json(fundMovements);
+        } catch (error) {
+            res.status(error.status || 500).json({ message: error.message || 'Error retrieving fund movements' });
+        }
+    }
 }
 
 export default new FundMovementController();

@@ -12,8 +12,8 @@ const verifyJWT = (req, res, next) => {
         // Save decoded token info in req.session.user
         req.session = {
             user: {
-                id: decoded.id,
-                role: decoded.role
+                id: Number(decoded.id),
+                role: Number(decoded.role)
             }
         };
 
