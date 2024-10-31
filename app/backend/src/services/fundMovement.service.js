@@ -1,11 +1,14 @@
-import {FundMovement, PaymentMethod, User} from '../models/index.js';
+import {ErrorLog, FundMovement, PaymentMethod, User} from '../models/index.js';
+import bankService from './microservices/bank.service.js';
+import creditCardService from './microservices/creditCard.service.js';
 
 class FundMovementService {
     async createFundMovement(data) {
-        const { userId, paymentMethodId, type, status, totalAmount, commissionAmount, netAmount, description } = data;
+        const { userId, paymentMethodId, type, status = 'PROCESADA', totalAmount, commissionAmount, netAmount, description } = data;
 
+        // Validación de campos obligatorios
         if (!userId || !paymentMethodId || !totalAmount || !type) {
-            throw { status: 400, message: 'userId, paymentMethodId, tipo and totalAmount are required!' };
+            throw { status: 400, message: 'userId, paymentMethodId, type, and totalAmount are required!' };
         }
 
         // Verificar si el usuario existe
@@ -20,19 +23,52 @@ class FundMovementService {
             throw { status: 404, message: 'Payment method not found' };
         }
 
-        // Crear y retornar el nuevo movimiento de fondos
-        const newFundMovement = await FundMovement.create({
-            userId,
-            paymentMethodId,
-            type,
-            status,
-            totalAmount,
-            commissionAmount,
-            netAmount,
-            description
-        });
+        try {
+            if (paymentMethodExists.type==='credit_card' && type==='INGRESO') throw new Error('you cannot deposit money to a credit card')
+            // Validar transacción según el tipo de método de pago
+            const isTransactionValid = paymentMethodExists.type === 'credit_card'
+                ? await creditCardService.validateTransactionCredit(paymentMethodExists.cardNumber, paymentMethodExists.pin, type, netAmount, description)
+                : await bankService.validateTransactionBank(paymentMethodExists.cardNumber, paymentMethodExists.pin, type, netAmount, description);
 
-        return newFundMovement;
+            if (!isTransactionValid) {
+                throw { status: 400, message: 'Transaction validation failed' };
+            }
+            // Crear y retornar el nuevo movimiento de fondos
+            const newFundMovement = await FundMovement.create({
+                userId,
+                paymentMethodId,
+                type,
+                status,
+                totalAmount,
+                commissionAmount,
+                netAmount,
+                description
+            });
+
+            return newFundMovement;
+
+        } catch (error) {
+            // Registrar el movimiento como FALLIDA
+            const failedFundMovement = await FundMovement.create({
+                userId,
+                paymentMethodId,
+                type,
+                status: 'FALLIDA',
+                totalAmount,
+                commissionAmount,
+                netAmount,
+                description: description || 'Error al procesar el movimiento'
+            });
+
+            // Crear un registro en ErrorLog
+            await ErrorLog.create({
+                errorMessage: error.message || 'Unknown error occurred',
+                fundMovementId: failedFundMovement.id,
+                resolved: false
+            });
+
+            throw { status: 500, message: 'Error creating fund movement: ' + error.message };
+        }
     }
 
     // Obtener todos los movimientos de fondos

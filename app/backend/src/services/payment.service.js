@@ -36,6 +36,18 @@ class PaymentService {
             const netAmountForUser = amount; // Mismo monto para el usuario
             const netAmountForCompany = amount - commissionAmount; // Monto menos la comisión para la compañía
 
+            // Crea el movimiento de fondos del tipo INGRESO para la compañía
+            await FundMovementService.createFundMovement({
+                userId: company.userId,
+                paymentMethodId: companyPaymentMethod.id,
+                type: 'INGRESO',
+                status: 'PROCESADA', // Cambia según tu lógica de estado
+                totalAmount: amount,
+                commissionAmount: commissionAmount,
+                netAmount: netAmountForCompany,
+                description: `Ingreso por compra realizada por ${user.firstname} ${user.lastname}`,
+                transaction: t // Pasa la transacción
+            });
             // Crea el movimiento de fondos del tipo EGRESO para el usuario
             await FundMovementService.createFundMovement({
                 userId: user.id,
@@ -49,25 +61,11 @@ class PaymentService {
                 transaction: t // Pasa la transacción
             });
 
-            // Crea el movimiento de fondos del tipo INGRESO para la compañía
-            await FundMovementService.createFundMovement({
-                userId: company.userId,
-                paymentMethodId: companyPaymentMethod.id,
-                type: 'INGRESO',
-                status: 'PROCESADA', // Cambia según tu lógica de estado
-                totalAmount: amount,
-                commissionAmount: commissionAmount,
-                netAmount: netAmountForCompany,
-                description: `Ingreso por compra realizada por ${user.firstname} ${user.lastname}`,
-                transaction: t // Pasa la transacción
-            });
-
             // Si todo es correcto, confirma la transacción
             await t.commit();
             return { message: 'Payment processed successfully' };
 
         } catch (error) {
-            console.log(error);
             await t.rollback(); // Revierte la transacción en caso de error
             throw error; // Lanza el error para manejarlo en el controlador
         }

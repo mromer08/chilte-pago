@@ -29,21 +29,43 @@ class CreditCardService {
             );
             
 
-            return response.data.exist;
+            return response.data.exist || false;
         } catch (error) {
             console.log(error);
             throw { status: 500, message: `Error linking payment method` };
         }
     }
+    
+    async validateTransactionCredit(cardNumber, pin, type, amount, description) {
+        try {
+            // Obtener el token de autenticación
+            const authResponse = await axios.post(`${process.env.PAYMENT_MICROSERVICE_URL}/api/auth/token`, {
+                clientId: process.env.CREDIT_CLIENT_ID,
+                clientSecret: process.env.CREDIT_CLIENT_SECRET
+            });
 
-    async validatePay({cardNumber, pin, amount}) {
-        return true;
-        // try {
-        //     const response = await axios.post(`${process.env.PAYMENT_MICROSERVICE_URL}/link-payment-method`, paymentData);
-        //     return response.data;
-        // } catch (error) {
-        //     throw new Error(`Error linking payment method: ${error.message}`);
-        // }
+            const { token } = authResponse.data;
+            if (!token) throw new Error('Token retrieval failed.');
+            
+            // Llamada para validar la transacción usando el token
+            console.log({ cardNumber, pin, amount, description })
+            const response = await axios.post(
+                `${process.env.PAYMENT_MICROSERVICE_URL}/api/pay`,
+                { cardNumber, pin, amount, description },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            // Retorna true si la transacción es válida, false si no
+            return response.data.isAuthorized || false;
+        } catch (error) {
+console.log(error)
+            // console.error(`Error validating credit transaction: ${error.message}`);
+            throw { status: 500, message: 'Error validating credit transaction' };
+        }
     }
 }
 
