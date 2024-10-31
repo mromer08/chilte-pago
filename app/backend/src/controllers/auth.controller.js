@@ -27,7 +27,7 @@ export const register = async (req, res) => {
 
     try {
         const user = await userService.createUser({ firstname, lastname, companyCode, password, username, roleId: 2000 });
-        res.status(201).json({ success: `New user ${user.email} registered!` });
+        res.status(201).json({ success: `New user ${user.email} registered!`, email: user.email });
         
     } catch (error) {
         res.status(error.status || 500).json({ message: error.message });

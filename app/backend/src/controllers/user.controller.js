@@ -69,7 +69,7 @@ class UserController {
             const { id } = req.params;
             const userAuthId = req.session.user.id
             const userAuthRole = req.session.user.role
-
+            console.log(id);
             if (Number(id) !== Number(userAuthId) && Number(userAuthRole) !== Number(ADMIN)) {
                 return res.status(403).json({ message: 'Access denied. You do not have permission to update this user.' });
             }
@@ -77,7 +77,8 @@ class UserController {
             const result = await UserService.deleteUser(id);
             res.status(200).json(result);
         } catch (error) {
-            res.status(404).json({ error: error.message });
+            console.log(error);
+            res.status(404).json({ error });
         }
     }
 
@@ -102,6 +103,7 @@ class UserController {
     }
 
     async getUserProfile (req, res) {
+        console.log('lleg')
         try {
             const userId = req.session.user.id; // Suponiendo que el ID del usuario está en la sesión
             const user = await UserService.getUserById(userId);

@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 
 import { User, Role, Company } from '../models/index.js';
 import tokenService from './token.service.js';
+import { sequelize } from '../config/db.config.js';
 
 class UserService {
     async createUser(data) {
@@ -66,13 +67,22 @@ class UserService {
     }
 
     async deleteUser(id) {
+        const t = await sequelize.transaction(); // Iniciar una transacción
+    
         try {
             const user = await User.findByPk(id);
-            console.log(user);
             if (!user) throw new Error('User not found');
-            await user.destroy();
+    
+            // Verificar el balance del usuario
+            if (user.balance > 0) {
+                throw {status:400, message: 'No se puede eliminar el usuario. La cuenta debe estar sin fondos.'};
+            }
+    
+            await user.destroy({ transaction: t }); // Eliminar al usuario dentro de la transacción
+            await t.commit(); // Confirmar la transacción
             return { message: 'User deleted successfully' };
         } catch (error) {
+            await t.rollback(); // Revertir la transacción en caso de error
             throw new Error('Error deleting user: ' + error.message);
         }
     }

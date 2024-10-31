@@ -49,15 +49,16 @@ const Register = ({ admin = false, updateUser, setEdit,   edit = {
 
   const onSubmit = async (data) => {
     const { firstname, lastname, username, password, rol, companyCode } = data;
-
+    let newEmail=""
     try {
       if (!admin) {
-        await axios.post(
+        const response = await axios.post(
           REGISTER_URL,
           JSON.stringify({ username, password, firstname, lastname, companyCode }),
           { headers: { "Content-Type": "application/json" } }
         );
-        toast.success("Usuario registrado exitosamente.");
+        newEmail=response.data.email;
+        toast.success(`Usuario registrado exitosamente. ${response.data.email} `);
       } else {
         const rolObj = {};
         for (const key in ROLES) {
@@ -83,7 +84,8 @@ const Register = ({ admin = false, updateUser, setEdit,   edit = {
           });
           toast.success("Empleado registrado exitosamente.");
         }
-        navigate(from, { replace: true });
+        navigate(from, { replace: true, state: { newEmail } });
+
       }
 
       reset();

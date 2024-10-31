@@ -12,6 +12,8 @@ import CreditCardList from "./pages/partials/cards/CreditCardList";
 import NotFound from "./pages/NotFound";
 import Movement from "./pages/user/Movement";
 import BalanceForm from "./pages/user/customer/BalanceForm";
+import EditProfile from "./pages/user/EditProfile";
+import UserList from "./pages/user/admin/UserList";
 
 export const ROLES = {
   User: 2000,
@@ -30,11 +32,18 @@ function App() {
           <Route path="/" element={<Welcome />} />
           <Route path="/user/new-app" element={<ApplicationForm/>} />
           <Route path="/unauthorized" element={<Unauthorized />} />
+          {/* rutas de usuario */}
           <Route element={<RequireAuth allowedRole={ROLES.User} />}>
             <Route path="/user/cards" element={<CreditCardList/>} />
             <Route path="/user/movements" element={<Movement/>}/>
             <Route path="/user/balance" element={<BalanceForm/>}/>
+            <Route path="/user/profile" element={<EditProfile/>}/>
           
+          </Route>
+
+          {/* rutas de admin */}
+          <Route element={<RequireAuth allowedRole={ROLES.Admin} />}>
+            <Route path="/admin/users" element={<UserList/>}/>
           </Route>
         
 

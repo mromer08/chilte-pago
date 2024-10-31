@@ -28,8 +28,8 @@ export default function NavBar() {
   if (auth?.role === ROLES.Admin) {
     navigation = [];
     navigation.push(
-      { name: "Crear Usuario", href: "/new-user", current: false },
-      { name: "Usuarios", href: "/users", current: false }
+      { name: "Crear Usuario", href: "/admin/new-user", current: false },
+      { name: "Usuarios", href: "/admin/users", current: false }
     );
   } else if (auth?.role === ROLES.User) {
     navigation = [];
@@ -192,7 +192,7 @@ export default function NavBar() {
                           <MenuItem>
                             {({ active }) => (
                               <a
-                                href="#"
+                                href="/user/profile"
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
                                   "block px-4 py-2 text-sm text-gray-700"
