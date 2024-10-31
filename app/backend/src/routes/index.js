@@ -5,6 +5,7 @@ import paymentMethodRoutes from './paymentMethod.routes.js';
 import fundMovementRoutes from './fundMovement.routes.js';
 import paymentRoutes from './payment.routes.js';
 import userMicroserviceRoutes from './microservice.routes.js';
+import reportRoutes from './report.routes.js';
 
 export {
     userRoutes,
@@ -13,5 +14,6 @@ export {
     paymentMethodRoutes,
     fundMovementRoutes,
     paymentRoutes,
-    userMicroserviceRoutes
+    userMicroserviceRoutes,
+    reportRoutes 
 };
