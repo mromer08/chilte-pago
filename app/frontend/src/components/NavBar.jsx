@@ -29,7 +29,8 @@ export default function NavBar() {
     navigation = [];
     navigation.push(
       { name: "Crear Usuario", href: "/admin/new-user", current: false },
-      { name: "Usuarios", href: "/admin/users", current: false }
+      { name: "Usuarios", href: "/admin/users", current: false },
+      { name: "Movimientos", href: "/admin/movements", current: false },
     );
   } else if (auth?.role === ROLES.User) {
     navigation = [];

@@ -8,6 +8,16 @@ const useMovements = () => {
   const axiosPrivate = useAxiosPrivate();
   const [movements, setMovements] = useState([]);
 
+  const getAllMovements = async () => {
+    try {
+      const res = await axiosPrivate.get(MOVEMENTS_URL);
+      setMovements(res.data);
+    } catch (error) {
+      console.log(error);
+      toast.error("Error al obtener todos los movimientos de fondos.");
+    }
+  };
+
   // Obtener movimientos de fondos para el usuario autenticado
   const getMovementsByUserAuth = async () => {
     try {
@@ -39,6 +49,7 @@ const useMovements = () => {
     movements,
     getMovementsByUserAuth,
     getMovementsByUserId,
+    getAllMovements
   };
 };
 

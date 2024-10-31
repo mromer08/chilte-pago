@@ -5,5 +5,6 @@ const router = express.Router();
 
 // Ruta para obtener el total de comisiones
 router.get('/commissions', ReportController.getTotalCommissions);
+router.get('/total-users', ReportController.getTotalUsers);
 
 export default router;

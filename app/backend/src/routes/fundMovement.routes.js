@@ -5,6 +5,7 @@ import { ADMIN, CUSTOMER } from '../config/roles.config.js';
 
 const router = express.Router();
 
+router.get('/', verifyRoles(ADMIN), fundMovementController.getAllFundMovements);
 router.get('/user', verifyRoles(CUSTOMER), fundMovementController.getFundMovementsByUserAuth);
 router.get('/user/:id', verifyRoles(ADMIN), fundMovementController.getFundMovementsByUserId);
 

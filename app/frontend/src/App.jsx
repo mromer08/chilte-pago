@@ -14,6 +14,7 @@ import Movement from "./pages/user/Movement";
 import BalanceForm from "./pages/user/customer/BalanceForm";
 import EditProfile from "./pages/user/EditProfile";
 import UserList from "./pages/user/admin/UserList";
+import AllMovement from "./pages/user/admin/AllMovements";
 
 export const ROLES = {
   User: 2000,
@@ -44,6 +45,7 @@ function App() {
           {/* rutas de admin */}
           <Route element={<RequireAuth allowedRole={ROLES.Admin} />}>
             <Route path="/admin/users" element={<UserList/>}/>
+            <Route path="/admin/movements" element={<AllMovement/>}/>
           </Route>
         
 
