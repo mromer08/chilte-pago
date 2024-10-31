@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
     firstname VARCHAR(255) NOT NULL,
     lastname VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    balance DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     status ENUM('ACTIVO', 'BANEADO', 'ELIMINADO') NOT NULL DEFAULT 'ACTIVO',
     role_id INT NOT NULL,
     created_at DATETIME NOT NULL,
@@ -97,12 +98,12 @@ INSERT INTO roles (id, name, created_at, updated_at) values (1001, "ADMIN", now(
 
 INSERT INTO users (email, firstname, lastname, password, status, role_id, created_at, updated_at)
 VALUES 
-    ('cliente1@Tienda1.com', 'Cliente1', 'Apellido1', '$2b$10$OwRmT1lyqKLxdv9fN6Va/OV2JaELi/jR6P1vgj5sWV0klwiI4fsxy', 'ACTIVO', 2000, NOW(), NOW()), -- Cliente 1
-    ('cliente2@Tienda1.com', 'Cliente2', 'Apellido2', '$2b$10$OwRmT1lyqKLxdv9fN6Va/OV2JaELi/jR6P1vgj5sWV0klwiI4fsxy', 'ACTIVO', 2000, NOW(), NOW()), -- Cliente 2
+    ('tienda@seminarioShop.com', 'Tienda', 'Apellido1', '$2b$10$OwRmT1lyqKLxdv9fN6Va/OV2JaELi/jR6P1vgj5sWV0klwiI4fsxy', 'ACTIVO', 2000, NOW(), NOW()), -- Cliente 1
+    ('cliente2@seminarioShop.com', 'Cliente2', 'Apellido2', '$2b$10$OwRmT1lyqKLxdv9fN6Va/OV2JaELi/jR6P1vgj5sWV0klwiI4fsxy', 'ACTIVO', 2000, NOW(), NOW()), -- Cliente 2
     ('admin@chiltepago.com', 'Admin', 'Supremo', '$2b$10$OwRmT1lyqKLxdv9fN6Va/OV2JaELi/jR6P1vgj5sWV0klwiI4fsxy', 'ACTIVO', 1001, NOW(), NOW()); -- Administrador
 
 INSERT INTO companies (code, secret_key, name, status, user_id, created_at, updated_at)
-VALUES ('1234', 'Tienda1Secret', 'Tienda1', 'ACTIVO', 1, NOW(), NOW());
+VALUES ('TE1234', '1234', 'seminarioShop', 'ACTIVO', 1, NOW(), NOW());
 
 INSERT INTO payment_methods (user_id, type, last_four, card_number, pin, status, created_at, updated_at)
 VALUES 
