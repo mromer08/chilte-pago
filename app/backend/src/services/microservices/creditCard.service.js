@@ -6,7 +6,7 @@ const CREDIT_CLIENT_SECRET = process.env.CREDIT_CLIENT_SECRET;
 
 class CreditCardService {
     // TODO: LINK WITH CREDIT CARD AND BANK
-    async linkPaymentMethod({ cardNumber, pin }) { return true;
+    async linkPaymentMethod({ cardNumber, pin }) {
         try {
             // Obtener el token de autenticación
             const authResponse = await axios.post(`${PAYMENT_MICROSERVICE_URL}/api/auth/token`, {
@@ -36,7 +36,7 @@ class CreditCardService {
         }
     }
     
-    async validateTransactionCredit(cardNumber, pin, type, amount, description) { return true;
+    async validateTransactionCredit(cardNumber, pin, type, amount, description) {
         try {
             // Obtener el token de autenticación
             const authResponse = await axios.post(`${process.env.PAYMENT_MICROSERVICE_URL}/api/auth/token`, {

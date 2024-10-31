@@ -1,11 +1,21 @@
 import {PaymentMethod} from '../models/index.js';
-import BankService from './microservices/creditCard.service.js'
+import CreditCardService from './microservices/creditCard.service.js'
+import BankService from './microservices/bank.service.js';
 
 class PaymentMethodService {
     async createPaymentMethod({ userId, type, lastFour, cardNumber, pin, status }) {
         try {
-            // Validar el método de pago con el servicio bancario
-            const isValid = await BankService.linkPaymentMethod({ cardNumber, pin });
+            let isValid;
+
+            // Verificar el tipo de método de pago
+            if (type === 'credit_card') {
+                // Validar el método de pago con el servicio de tarjeta de crédito
+                isValid = await CreditCardService.linkPaymentMethod({ cardNumber, pin });
+            } else {
+                // Si no es tarjeta de crédito, usar el servicio de cuenta bancaria
+                isValid = await BankService.linkPaymentMethod({ cardNumber, pin }); // Ajusta los parámetros según el servicio
+            }
+
             if (!isValid) {
                 throw { status: 400, message: 'Payment method validation failed.' };
             }
