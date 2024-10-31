@@ -7,10 +7,10 @@ import Welcome from "./pages/Welcome";
 import NavBarLayout from "./layouts/NavBar";
 import Unauthorized from "./pages/Unauthorized";
 import RequireAuth from "./components/RequireAuth";
-import UserDashboard from "./pages/user/UserDashboard";
 import ApplicationForm from "./pages/partials/applicattion/ApplicationForm";
 import CreditCardList from "./pages/partials/cards/CreditCardList";
 import NotFound from "./pages/NotFound";
+import Movement from "./pages/user/Movement";
 
 export const ROLES = {
   User: 2000,
@@ -31,7 +31,7 @@ function App() {
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route element={<RequireAuth allowedRole={ROLES.User} />}>
             <Route path="/user/cards" element={<CreditCardList/>} />
-            <Route path="/user/dashboard" element={<UserDashboard/>} />
+            <Route path="/user/movements" element={<Movement/>}/>
           
           </Route>
         

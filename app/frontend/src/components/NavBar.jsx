@@ -36,18 +36,13 @@ export default function NavBar() {
     // Opción adicional para el rol de entrega
     navigation.push(
       {
-        name: "Crear Aplicacion",
-        href: "/app-form",
+        name: "Mi balance",
+        href: "/user/balance",
         current: false,
       },
       {
-        name: "Mis aplicaciones",
-        href: "/profile/apps",
-        current: false,
-      },
-      {
-        name: "Mis Pagos",
-        href: "/orders",
+        name: "Mis Movimientos",
+        href: "/user/movements",
         current: false,
       },
       {
