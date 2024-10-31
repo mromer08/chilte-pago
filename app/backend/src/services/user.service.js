@@ -63,19 +63,10 @@ class UserService {
         }
     }
 
-    async updateUser(id, data) {
-        try {
-            const user = await User.findByPk(id);
-            if (!user) throw new Error('User not found');
-            return await user.update(data);
-        } catch (error) {
-            throw new Error('Error updating user: ' + error.message);
-        }
-    }
-
     async deleteUser(id) {
         try {
             const user = await User.findByPk(id);
+            console.log(user);
             if (!user) throw new Error('User not found');
             await user.destroy();
             return { message: 'User deleted successfully' };
@@ -126,6 +117,37 @@ class UserService {
         await tokenService.createToken({ userId: user.id, tokenString: refreshToken });
     
         return { token, role: user.Role.id, fullname: `${user.firstname} ${user.lastname}` };
+    };
+
+    async updatePassword (userId, currentPassword, newPassword) {
+        const user = await User.findByPk(userId);
+        if (!user) {
+            throw new Error(`User with ID ${userId} not found`);
+        }
+    
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            throw new Error('Current password is incorrect.');
+        }
+    
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedNewPassword;
+        await user.save();
+        return { message: 'Password updated successfully.' };
+    };
+
+    async updateUser (userId, updates) {
+        const user = await User.findByPk(userId, { attributes: { exclude: ['password'] } });
+        if (!user) {
+            throw new Error(`No user found with ID ${userId}.`);
+        }
+    
+        // Actualizar campos
+        user.firstname = updates.firstname || user.firstname;
+        user.lastname = updates.lastname || user.lastname;
+    
+        await user.save();
+        return user;
     };
 }
 

@@ -1,3 +1,4 @@
+import { ADMIN } from '../config/roles.config.js';
 import UserService from '../services/user.service.js';
 
 class UserController {
@@ -36,19 +37,43 @@ class UserController {
         }
     }
 
-    async updateUser(req, res) {
-        try {
-            const { id } = req.params;
-            const updatedUser = await UserService.updateUser(id, req.body);
-            res.status(200).json(updatedUser);
-        } catch (error) {
-            res.status(404).json({ error: error.message });
+    async updateUser (req, res) {
+        const { id } = req.params;
+        const userAuthId = req.session.user.id
+        const userAuthRole = req.session.user.role
+        const { firstname, lastname, newPassword, currentPassword } = req.body;
+    
+        if (!id) {
+            return res.status(400).json({ message: 'User ID is required.' });
         }
+            // Verificar si el usuario autenticado tiene permisos para actualizar
+    if (Number(id) !== Number(userAuthId) && Number(userAuthRole) !== Number(ADMIN)) {
+        return res.status(403).json({ message: 'Access denied. You do not have permission to update this user.' });
     }
+    
+        try {
+            const updates = { firstname, lastname, newPassword, currentPassword };
+            let updatedUser = await UserService.updateUser(id, updates);
+            if (newPassword) {
+                updatedUser = await UserService.updatePassword(id, currentPassword, newPassword);
+            }
+
+            res.json(updatedUser);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    };
 
     async deleteUser(req, res) {
         try {
             const { id } = req.params;
+            const userAuthId = req.session.user.id
+            const userAuthRole = req.session.user.role
+
+            if (Number(id) !== Number(userAuthId) && Number(userAuthRole) !== Number(ADMIN)) {
+                return res.status(403).json({ message: 'Access denied. You do not have permission to update this user.' });
+            }
+
             const result = await UserService.deleteUser(id);
             res.status(200).json(result);
         } catch (error) {

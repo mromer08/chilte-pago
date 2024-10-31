@@ -25,8 +25,8 @@ server.use(`${api}/user-email`, userMicroserviceRoutes);
 
 
 server.use(`${api}/role`, roleRoutes);
-server.use(`${api}/user`, userRoutes);
 server.use(verifyJWT);
+server.use(`${api}/user`, userRoutes);
 server.use(`${api}/payment-method`, paymentMethodRoutes);
 server.use(`${api}/fund-movement`, fundMovementRoutes);
 

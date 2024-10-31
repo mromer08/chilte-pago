@@ -1,4 +1,4 @@
 import dotenv from 'dotenv';
-
-export const ADMIN = process.env.ADMIN_ROLE_CODE;
-export const CUSTOMER = process.env.CUSTOMER_ROLE_CODE;
+dotenv.config();
+export const ADMIN = Number(process.env.ADMIN_ROLE_CODE);
+export const CUSTOMER = Number(process.env.CUSTOMER_ROLE_CODE);

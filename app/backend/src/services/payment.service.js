@@ -64,6 +64,10 @@ class PaymentService {
             if (!user) {
                 throw { status: 404, message: 'User not found' };
             }
+
+            if (Number(user.balance) < Number(amount)) {
+                throw { status: 400, message: 'User does not have enough money in balance' };
+            }
             // busccando tarjetas se puede agregar atributo isCurrent para validar que sea la por defecto
             const userPaymentMethod = await PaymentMethod.findOne({ where: { userId: user.id, type: 'bank_account'}, transaction: t });
             if (!userPaymentMethod) {

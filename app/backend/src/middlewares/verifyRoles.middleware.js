@@ -4,7 +4,8 @@ const verifyRoles = (...allowedRoleCodes) => {
             return res.sendStatus(401); // Unauthorized
         }
         const userRoleCode = req.session.user.role;
-
+        console.log(allowedRoleCodes);
+        console.log(userRoleCode);
         if (!allowedRoleCodes.includes(userRoleCode)) {
             return res.sendStatus(403); // Forbidden
         }
