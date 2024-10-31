@@ -94,7 +94,21 @@ INSERT INTO roles (id, name, created_at, updated_at) values (2000, "CLIENTE", no
 INSERT INTO roles (id, name, created_at, updated_at) values (1001, "ADMIN", now(), now());
 -- INSERT INTO roles (id, name, created_at, updated_at) values (1002, "EMPRESA", now(), now());
 
-INSERT INTO companies (code, secret_key, name, status, created_at, updated_at)
-VALUES ('1234', 'Tienda1Secret', 'Tienda1', 'ACTIVO', NOW(), NOW());
 
-UPDATE companies SET user_id = 2 WHERE code = 1234;
+INSERT INTO users (email, firstname, lastname, password, status, role_id, created_at, updated_at)
+VALUES 
+    ('cliente1@Tienda1.com', 'Cliente1', 'Apellido1', '$2b$10$OwRmT1lyqKLxdv9fN6Va/OV2JaELi/jR6P1vgj5sWV0klwiI4fsxy', 'ACTIVO', 2000, NOW(), NOW()), -- Cliente 1
+    ('cliente2@Tienda1.com', 'Cliente2', 'Apellido2', '$2b$10$OwRmT1lyqKLxdv9fN6Va/OV2JaELi/jR6P1vgj5sWV0klwiI4fsxy', 'ACTIVO', 2000, NOW(), NOW()), -- Cliente 2
+    ('admin@chiltepago.com', 'Admin', 'Supremo', '$2b$10$OwRmT1lyqKLxdv9fN6Va/OV2JaELi/jR6P1vgj5sWV0klwiI4fsxy', 'ACTIVO', 1001, NOW(), NOW()); -- Administrador
+
+INSERT INTO companies (code, secret_key, name, status, user_id, created_at, updated_at)
+VALUES ('1234', 'Tienda1Secret', 'Tienda1', 'ACTIVO', 1, NOW(), NOW());
+
+INSERT INTO payment_methods (user_id, type, last_four, card_number, pin, status, created_at, updated_at)
+VALUES 
+    -- Métodos de pago para Cliente 1
+    (1, 'credit_card', '3333', '4333333333333333', '1234', 'VALIDA', NOW(), NOW()),
+    (2, 'credit_card', '4444', '4444444444444444', '1234', 'VALIDA', NOW(), NOW()),
+    -- Opcionales: métodos de pago de tipo cuenta bancaria
+    (2, 'bank_account', NULL, '1234567890', '0000', 'VALIDA', NOW(), NOW()),
+    (1, 'bank_account', NULL, '0987654321', '0000', 'VALIDA', NOW(), NOW());

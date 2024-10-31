@@ -11,7 +11,7 @@ const verifyAppJWT = (req, res, next) => {
         // Guardar applicationId en req.session.app.id
         req.session = {
             company: {
-                id: decoded.code,
+                code: decoded.code,
                 name:decoded.name,
                 userId:decoded.userId
             }

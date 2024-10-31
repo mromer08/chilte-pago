@@ -55,6 +55,26 @@ class UserController {
             res.status(404).json({ error: error.message });
         }
     }
+
+    async findUserByEmail(req, res) {
+        const { email } = req.params;
+
+        try {
+            // Llamar al método del servicio que busca el usuario por email
+            const user = await UserService.findUserByEmail(email);
+
+            // Verificar si se encontró el usuario
+            if (!user) {
+                return res.status(404).json({ message: 'Usuario no encontrado', exists:false });
+            }
+
+            // Responder con los datos del usuario encontrado
+            return res.status(200).json({exists:true, message: 'Usuario encontrado'});
+        } catch (error) {
+            // Manejar errores y enviar respuesta de error
+            return res.status(500).json({ message: 'Error al buscar el usuario', error: error.message });
+        }
+    }
 }
 
 export default new UserController();

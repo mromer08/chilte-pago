@@ -4,29 +4,25 @@ import FundMovementService from './fundMovement.service.js';
 
 class PaymentService {
     async processPayment(companyCode, userEmail, amount) {
-        const t = await sequelize.transaction(); // Inicia una transacción
+        const t = await sequelize.transaction();
 
         try {
-            // Verifica si existe la compañía
             const company = await Company.findOne({ where: { code: companyCode }, transaction: t });
             if (!company) {
                 throw { status: 404, message: 'Company not found' };
             }
 
-            // Verifica si existe el usuario
             const user = await User.findOne({ where: { email: userEmail }, transaction: t });
             if (!user) {
                 throw { status: 404, message: 'User not found' };
             }
-
-            // Obtiene el primer método de pago del usuario
+            // busccando tarjetas se puede agregar atributo isCurrent para validar que sea la por defecto
             const userPaymentMethod = await PaymentMethod.findOne({ where: { userId: user.id }, transaction: t });
             if (!userPaymentMethod) {
                 throw { status: 404, message: 'User payment method not found' };
             }
 
-            // Obtiene el primer método de pago de la compañía
-            const companyPaymentMethod = await PaymentMethod.findOne({ where: { userId: company.userId }, transaction: t });
+            const companyPaymentMethod = await PaymentMethod.findOne({ where: { userId: company.userId, type: 'bank_account' }, transaction: t });
             if (!companyPaymentMethod) {
                 throw { status: 404, message: 'Company payment method not found' };
             }
@@ -41,33 +37,32 @@ class PaymentService {
                 userId: company.userId,
                 paymentMethodId: companyPaymentMethod.id,
                 type: 'INGRESO',
-                status: 'PROCESADA', // Cambia según tu lógica de estado
+                status: 'PROCESADA',
                 totalAmount: amount,
                 commissionAmount: commissionAmount,
                 netAmount: netAmountForCompany,
                 description: `Ingreso por compra realizada por ${user.firstname} ${user.lastname}`,
-                transaction: t // Pasa la transacción
+                transaction: t 
             });
             // Crea el movimiento de fondos del tipo EGRESO para el usuario
             await FundMovementService.createFundMovement({
                 userId: user.id,
                 paymentMethodId: userPaymentMethod.id,
                 type: 'EGRESO',
-                status: 'PROCESADA', // Cambia según tu lógica de estado
+                status: 'PROCESADA',
                 totalAmount: amount,
                 commissionAmount: 0,
                 netAmount: netAmountForUser,
                 description: `Compra realizada en ${company.name}`,
-                transaction: t // Pasa la transacción
+                transaction: t 
             });
 
-            // Si todo es correcto, confirma la transacción
             await t.commit();
             return { message: 'Payment processed successfully' };
 
         } catch (error) {
-            await t.rollback(); // Revierte la transacción en caso de error
-            throw error; // Lanza el error para manejarlo en el controlador
+            await t.rollback(); 
+            throw error; 
         }
     }
 }

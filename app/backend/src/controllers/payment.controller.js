@@ -2,7 +2,7 @@ import paymentService from '../services/payment.service.js';
 
 export const processPayment = async (req, res) => {
     const { userEmail, amount } = req.body;
-    const companyCode = req.session.company.id; // El código de la compañía desde la sesión decodificada
+    const companyCode = req.session.company.code; // El código de la compañía desde la sesión decodificada
 
     // Validar campos requeridos
     if (!companyCode || !userEmail || !amount) {
