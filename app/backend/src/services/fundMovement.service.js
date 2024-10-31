@@ -27,8 +27,8 @@ class FundMovementService {
             if (paymentMethodExists.type==='credit_card' && type==='INGRESO') throw new Error('you cannot deposit money to a credit card')
             // Validar transacción según el tipo de método de pago
             const isTransactionValid = paymentMethodExists.type === 'credit_card'
-                ? await creditCardService.validateTransactionCredit(paymentMethodExists.cardNumber, paymentMethodExists.pin, type, netAmount, description)
-                : await bankService.validateTransactionBank(paymentMethodExists.cardNumber, paymentMethodExists.pin, type, netAmount, description);
+                ? await creditCardService.validateTransactionCredit(paymentMethodExists.cardNumber, paymentMethodExists.pin, type, totalAmount, description)
+                : await bankService.validateTransactionBank(paymentMethodExists.cardNumber, paymentMethodExists.pin, type, totalAmount, description);
 
             if (!isTransactionValid) {
                 throw { status: 400, message: 'Transaction validation failed' };
@@ -113,6 +113,8 @@ class FundMovementService {
         await fundMovement.destroy();
         return { message: 'Fund movement deleted successfully' };
     }
+
+
 }
 
 export default new FundMovementService();

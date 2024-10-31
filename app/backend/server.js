@@ -17,9 +17,10 @@ server.use(express.urlencoded({ extended: false }));
 server.use(express.json());
 
 const api = '/api/v1';
+server.use(`${api}`, paymentRoutes);
+
 server.use(`${api}/auth`, authRoutes);
 
-server.use(`${api}/pay`, paymentRoutes);
 server.use(`${api}/user-email`, userMicroserviceRoutes);
 
 

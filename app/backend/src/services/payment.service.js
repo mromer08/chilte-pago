@@ -22,45 +22,78 @@ class PaymentService {
                 throw { status: 404, message: 'User payment method not found' };
             }
 
-            const companyPaymentMethod = await PaymentMethod.findOne({ where: { userId: company.userId, type: 'bank_account' }, transaction: t });
-            if (!companyPaymentMethod) {
-                throw { status: 404, message: 'Company payment method not found' };
+            const companyUser = await User.findOne({ where: { id: company.userId }, transaction: t });
+            if (!companyUser) {
+                throw { status: 404, message: 'Company user not found' };
             }
 
             // Calcula la comisión
-            const commissionAmount = amount * 0.013; // 1.3%
-            const netAmountForUser = amount; // Mismo monto para el usuario
-            const netAmountForCompany = amount - commissionAmount; // Monto menos la comisión para la compañía
+            const commissionAmount = Number(amount) * 0.013; // 1.3%
+            const netAmountForUser = Number(amount) + commissionAmount;
 
-            // Crea el movimiento de fondos del tipo INGRESO para la compañía
-            await FundMovementService.createFundMovement({
-                userId: company.userId,
-                paymentMethodId: companyPaymentMethod.id,
-                type: 'INGRESO',
-                status: 'PROCESADA',
-                totalAmount: amount,
-                commissionAmount: commissionAmount,
-                netAmount: netAmountForCompany,
-                description: `Ingreso por compra realizada por ${user.firstname} ${user.lastname}`,
-                transaction: t 
-            });
             // Crea el movimiento de fondos del tipo EGRESO para el usuario
             await FundMovementService.createFundMovement({
                 userId: user.id,
                 paymentMethodId: userPaymentMethod.id,
                 type: 'EGRESO',
                 status: 'PROCESADA',
-                totalAmount: amount,
-                commissionAmount: 0,
-                netAmount: netAmountForUser,
+                totalAmount: netAmountForUser,
+                commissionAmount: commissionAmount,
+                netAmount: amount,
                 description: `Compra realizada en ${company.name}`,
                 transaction: t 
             });
 
+            companyUser.balance = Number(companyUser.balance) + Number(amount);
+            await companyUser.save({ transaction: t });
             await t.commit();
             return { message: 'Payment processed successfully' };
 
         } catch (error) {
+            // console.log(error)
+            await t.rollback(); 
+            throw error; 
+        }
+    }
+    async processDeposit(userId, amount) {
+        const t = await sequelize.transaction();
+
+        try {
+
+            const user = await User.findOne({ where: { id: userId }, transaction: t });
+            if (!user) {
+                throw { status: 404, message: 'User not found' };
+            }
+            // busccando tarjetas se puede agregar atributo isCurrent para validar que sea la por defecto
+            const userPaymentMethod = await PaymentMethod.findOne({ where: { userId: user.id, type: 'bank_account'}, transaction: t });
+            if (!userPaymentMethod) {
+                throw { status: 404, message: 'User payment method not found' };
+            }
+
+            // Calcula la comisión
+            const commissionAmount = Number(amount) * 0.013; // 1.3%
+            const netAmountForUser = Number(amount) - commissionAmount;
+
+            // Crea el movimiento de fondos del tipo EGRESO para el usuario
+            await FundMovementService.createFundMovement({
+                userId: user.id,
+                paymentMethodId: userPaymentMethod.id,
+                type: 'INGRESO',
+                status: 'PROCESADA',
+                totalAmount: netAmountForUser,
+                commissionAmount: commissionAmount,
+                netAmount: amount,
+                description: `Movimiento de fondos a cuenta de banco ${userPaymentMethod.cardNumber}`,
+                transaction: t 
+            });
+
+            user.balance = Number(user.balance) - Number(amount);
+            await user.save({ transaction: t });
+            await t.commit();
+            return { message: 'Deposit processed successfully', balance: user.balance };
+
+        } catch (error) {
+            // console.log(error)
             await t.rollback(); 
             throw error; 
         }
